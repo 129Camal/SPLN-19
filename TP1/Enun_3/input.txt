@@ -1,0 +1,66 @@
+d = {
+    tmx:{
+        '_version': 'version 1.0',
+        header: {
+         '_creationtool'        : 'cwb-utils',
+         '_creationtoolversion' : '1.0',
+         '_segtype'             : 'sentence',
+         '_adminlang'           : 'EN-US',
+         '_srclang'             : 'pt',
+         '_o-tmf'               : 'CQP-corpora',
+         '__CONTENT'            : 'Tudo bem?'
+        },
+        body: {
+            tu: [
+                {
+                    tuv: [
+                        {
+                            '_lang' : 'pt',
+                            seg: {
+                                '__CONTENT': 'A minha mãe pediu-me que a acompanhasse para vender a casa .'
+                            }
+                        },
+                        {
+                            '_lang' : 'es',
+                            seg: {
+                                '__CONTENT': 'Mi madre me pidió que la acompañara a vender la casa .'
+                            }
+                        }
+                    ]
+                },
+                {
+                    tuv: [
+                        {
+                            '_lang' : 'pt',
+                            seg: {
+                                '__CONTENT': 'Tinha chegado a Barranquilla naquela manhã , vinda da aldeia distante onde vivia a família , e não tinha a menor ideia de como me havia de encontrar .'
+                            }
+                        },
+                        {
+                            '_lang' : 'es',
+                            seg: {
+                                '__CONTENT': 'Había llegado a Barranquilla esa mañana desde el pueblo distante donde vivía la familia y no tenía la menor idea de cómo encontrarme .'
+                            }
+                        }
+                    ]
+                },
+                {
+                    tuv: [
+                        {
+                            '_lang' : 'pt',
+                            seg: {
+                                '__CONTENT': 'Perguntando por aqui e por ali entre os conhecidos , deram-lhe a indicação que me procurasse na Librería Mundo ou nos cafés próximos , onde ia duas vezes por dia para conversar com os meus amigos escritores .'
+                            }
+                        },
+                        {
+                            '_lang' : 'es',
+                            seg: {
+                                '__CONTENT': 'Preguntando por aquí y por allá entre los conocidos , le indicaron que me buscara en la librería Mundo o en los cafés vecinos , donde iba dos veces al día a conversar con mis amigos escritores .'
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
