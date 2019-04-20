@@ -3,18 +3,21 @@ import nltk
 from nltk.corpus import stopwords
 
 #nltk.download('stopwords')
+#nltk.download('words')
+#nltk.download('maxent_ne_chunker')
+#nltk.download('punkt')
+#nltk.download('averaged_perceptron_tagger')
 
 text = open("text.txt").read()
 stop = set(stopwords.words('english'))
 sentences = nltk.sent_tokenize(text)
 
-for sentence in sentences:
-    #filteredWords = []
+products = []
+prices = []
+locations = []
 
+for sentence in sentences:
     words = nltk.word_tokenize(sentence)
-    # for w in words:
-    #     if w not in stop:
-    #         filteredWords.append(w)
 
     tags = nltk.pos_tag(words)
     
@@ -28,23 +31,38 @@ for sentence in sentences:
     namedEnt = nltk.ne_chunk(tags)
     for t in namedEnt.subtrees():
         if t.label() == "GPE":
-            print("Location: "+str(t.leaves()))
+            locations.append(t.leaves())
         if t.label() == "ORGANIZATION":
-            print("Company: "+str(t.leaves()))
-            
-    #print(list(tree.subtrees()))
+            company = (t.leaves())[0][0]
 
     flag = 0
-    product = ""
-    price = ""
     for subtree in tree.subtrees():
         if subtree.label() == "Price": 
-            #print("Price: "+str(subtree.leaves()))
-            price = str(subtree.leaves())
+            price = subtree.leaves()
             flag = 1
+
         if subtree.label() == "Product": 
-            #print("Product: "+str(subtree.leaves()))
-            product = str(subtree.leaves())
+            product = subtree.leaves()
+        
         if flag == 1:
-            print("Product: " + product +"\nPrice: " + price)
+            products.append(product)
+            prices.append(price)
             flag = 0
+j = 0
+for product in products:
+    for i in range(len(product)):
+        if(i != (len(product)-1)):
+            products[j] = (product[i][0], prices[j][1][0])
+            j += 1
+
+j = 0
+for location in locations:
+    for i in range(len(location)):
+        location[i] = location[i][0]
+    locations[j] = " ".join(location)
+    j += 1
+    
+
+print("Products: " + str(products))
+print("Locations: " + str(locations))
+print("Company: " + str(company))
