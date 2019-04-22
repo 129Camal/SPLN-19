@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://spln.di.uminho.pt/ontology"
+         xmlns="http://spln.di.uminho.pt/ontology#">
+
+<owl:Ontology rdf:about="http://spln.di.uminho.pt/ontology"/>
+
+<owl:Class rdf:about="#Company">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Product">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Location">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:ObjectProperty rdf:about="#is_product_of">
+  <rdfs:domain rdf:resource="#Product"/>
+  <rdfs:range rdf:resource="#Company"/>
+  <owl:inverseOf rdf:resource="#has_product"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#is_location_of">
+  <rdfs:domain rdf:resource="#Location"/>
+  <rdfs:range rdf:resource="#Company"/>
+  <owl:inverseOf rdf:resource="#has_location"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_product">
+  <rdfs:domain rdf:resource="#Company"/>
+  <rdfs:range rdf:resource="#Product"/>
+  <owl:inverseOf rdf:resource="#is_product_of"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_location">
+  <rdfs:domain rdf:resource="#Company"/>
+  <rdfs:range rdf:resource="#Location"/>
+  <owl:inverseOf rdf:resource="#is_location_of"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#has_cost">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Product"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+</owl:DatatypeProperty>
+
+<Company rdf:about="#Walmart">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_product rdf:resource="#TV_1"/>
+  <has_product rdf:resource="#bike_2"/>
+  <has_product rdf:resource="#sofa_3"/>
+  <has_product rdf:resource="#bed_mattress_4"/>
+  <has_product rdf:resource="#pillows_5"/>
+  <has_location rdf:resource="#New_York"/>
+  <has_location rdf:resource="#Seattle"/>
+</Company>
+
+<Product rdf:about="#TV_1">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">500.0</has_cost>
+</Product>
+
+<Product rdf:about="#bike_2">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2000.0</has_cost>
+</Product>
+
+<Product rdf:about="#sofa_3">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">350.0</has_cost>
+</Product>
+
+<Product rdf:about="#bed_mattress_4">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</has_cost>
+</Product>
+
+<Product rdf:about="#pillows_5">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">20.0</has_cost>
+</Product>
+
+<Location rdf:about="#New_York">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Location>
+
+<Location rdf:about="#Seattle">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Location>
+
+<Company rdf:about="#Apple">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_product rdf:resource="#TV_6"/>
+  <has_product rdf:resource="#smartphones_7"/>
+  <has_product rdf:resource="#eyeglasses_8"/>
+  <has_location rdf:resource="#London"/>
+  <has_location rdf:resource="#New_York"/>
+</Company>
+
+<Location rdf:about="#London">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Location>
+
+<Product rdf:about="#TV_6">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">400.0</has_cost>
+</Product>
+
+<Product rdf:about="#smartphones_7">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1000.0</has_cost>
+</Product>
+
+<Product rdf:about="#eyeglasses_8">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <has_cost rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">550.0</has_cost>
+</Product>
+
+
+</rdf:RDF>
