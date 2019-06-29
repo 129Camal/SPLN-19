@@ -3,6 +3,41 @@ import requests
 import sys
 import re
 
+
+def getMeaning(word, semantic_meaning):
+    urlBase = "https://www.lexico.com/en/definition/cold"
+
+    response = requests.get(urlBase).content
+
+    soup = BS(response, 'html.parser')
+
+    word_types = soup.findAll('section', 'gramb')
+
+    for word_type in word_types:
+        instance = word_type.find('h3', 'ps pos')
+        
+        if(semantic_meaning != instance.span.text):
+            continue
+
+        ul = word_type.find('ul', 'semb')
+        lis = ul.findAll('li')
+
+        allmeaning = []
+        for li in lis:
+            div = li.find('div', 'trg')
+
+            if(div):
+                p = div.find('p')
+                if(p):
+                    span = p.find('span', 'ind')
+                    allmeaning.append(span.text)
+        
+        if(len(allmeaning) > 0):
+            x = ";".join(allmeaning)
+            print("\t\t\t<prop type=\"meaning\">" +
+                  x + "</prop>")
+
+
 languages = [('german', 'de'), ('french', 'fr'), ('spanish', 'es'),
              ('chinese', 'ch'), ('russian', 'ru'), ('portuguese', 'pt'), ('italian', 'it'), ('polish', 'pl')]
 
@@ -48,16 +83,19 @@ i = 0
 
 for word_type in types.items():
     print("\t\t<tu tuid=\"" + str(i+1) + "\">",
-          "\t\t\t<prop type=\"word_type\"> " + word_type[0] +
-          " </prop>",
-          "\t\t\t<tuv xml:lang=\"en\">",
-          "\t\t\t\t<seg> cold </seg>",
+          "\t\t\t<prop type=\"word_type\">" + word_type[0] +
+          "</prop>", sep="\n")
+
+    getMeaning("cold", word_type[0])
+
+    print("\t\t\t<tuv xml:lang=\"en\">",
+          "\t\t\t\t<seg>cold</seg>",
           "\t\t\t</tuv>",
           sep="\n")
 
     for translation in word_type[1]:
         print("\t\t\t<tuv xml:lang=\"" + translation[0] + "\">",
-              "\t\t\t\t<seg> " + translation[1] + " </seg>",
+              "\t\t\t\t<seg>" + translation[1] + "</seg>",
               "\t\t\t</tuv>",
               sep="\n")
     i = i + 1
@@ -92,13 +130,13 @@ print("\t</body>",
 
 #                 audio = re.search(r"\"PT_PT(\w|\d|\/|\-)+\"", audio['onclick'])
 #                 # print(audio.group())
-    # print("\t\t<tu tuid=\"" + str(i+1) + "\">",
-    #       "\t\t\t<prop type=\"word_type\"> " + word_type.text +
-    #       " </prop>", "\t\t\t<tuv xml:lang=\"en\">",
-    #       "\t\t\t\t<seg> " + word.a.text + " </seg>",
-    #       "\t\t\t</tuv>",
-    #       sep="\n")
-    # i = i + 1
+# print("\t\t<tu tuid=\"" + str(i+1) + "\">",
+#       "\t\t\t<prop type=\"word_type\"> " + word_type.text +
+#       " </prop>", "\t\t\t<tuv xml:lang=\"en\">",
+#       "\t\t\t\t<seg> " + word.a.text + " </seg>",
+#       "\t\t\t</tuv>",
+#       sep="\n")
+# i = i + 1
 #                 for translation in translations:
 #                     print("\t\t\t<tuv xml:lang=\"" + language+"\">",
 #                           "\t\t\t\t<seg> " + translation.a.text + " </seg>",
