@@ -2,10 +2,16 @@ from bs4 import BeautifulSoup as BS
 import requests
 import sys
 import re
+import getopt
+
+#
+# Funtion to get the meaning of the word with certain semantic meaning
+#
 
 
 def getMeaning(word, semantic_meaning):
-    urlBase = "https://www.lexico.com/en/definition/cold"
+
+    urlBase = "https://www.lexico.com/en/definition/" + word
 
     response = requests.get(urlBase).content
 
@@ -15,7 +21,7 @@ def getMeaning(word, semantic_meaning):
 
     for word_type in word_types:
         instance = word_type.find('h3', 'ps pos')
-        
+
         if(semantic_meaning != instance.span.text):
             continue
 
@@ -31,121 +37,91 @@ def getMeaning(word, semantic_meaning):
                 if(p):
                     span = p.find('span', 'ind')
                     allmeaning.append(span.text)
-        
+
         if(len(allmeaning) > 0):
             x = ";".join(allmeaning)
             print("\t\t\t<prop type=\"meaning\">" +
                   x + "</prop>")
 
 
+# -------------------------------- BEGIN ----------------------------------- #
+
+# All languages available
 languages = [('german', 'de'), ('french', 'fr'), ('spanish', 'es'),
              ('chinese', 'ch'), ('russian', 'ru'), ('portuguese', 'pt'), ('italian', 'it'), ('polish', 'pl')]
 
-types = {}
+# See what words and what languages the user wants
+opts, args = getopt.getopt(sys.argv[1:], '', ['to='])
 
-for language in languages:
-    urlBase = "https://www.linguee.com/english-" + \
-        language[0] + "/search?query=cold"
+# Filter the languages that user wants
+languages = list(filter(lambda x: x[1] in opts[0][1], languages))
 
-    response = requests.get(urlBase).content
+# End the script if we not have languages or words to translate
+if(len(languages) <= 0 or len(args) <= 0):
+    print("Please enter the corret inputs!")
+    sys.exit()
 
-    soup = BS(response, 'html.parser')
+for userWord in args:
+    types = {}
 
-    dictionary = soup.find('div', id="dictionary")
-    exact = dictionary.find('div', 'exact')
-    lemma = exact.findAll('div', 'lemma')
+    for language in languages:
+        urlBase = "https://www.linguee.com/english-" + \
+            language[0] + "/search?query=" + userWord
 
-    for lem in lemma:
-        word = lem.find('span', 'tag_lemma')
-        tag_wordtype = word.find('span', 'tag_wordtype')
+        response = requests.get(urlBase).content
 
-        word_type = tag_wordtype.text
-        if(not types.get(word_type)):
-            types[word_type] = []
+        soup = BS(response, 'html.parser')
 
-        translation = lem.find('span', 'tag_trans')
-        types[word_type].append((language[1], translation.a.text))
+        dictionary = soup.find('div', id="dictionary")
+        exact = dictionary.find('div', 'exact')
+        lemma = exact.findAll('div', 'lemma')
 
-f = open('english2all.tmx', 'w')
-sys.stdout = f
+        for lem in lemma:
+            word = lem.find('span', 'tag_lemma')
+            tag_wordtype = word.find('span', 'tag_wordtype')
 
-print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-      "<tmx version=\"1.4\">",
-      "\t<header adminlang=\"en\"",
-      "\t\tdatatype=\"tbx\"",
-      "\t\to-tmf=\"unknown\"",
-      "\t\tsegtype=\"block\"",
-      "\t\tsrclang=\"en\"/>",
-      "\t<body>",
-      sep="\n")
+            word_type = tag_wordtype.text
+            if(not types.get(word_type)):
+                types[word_type] = []
 
-i = 0
+            translation = lem.find('span', 'tag_trans')
+            types[word_type].append((language[1], translation.a.text))
 
-for word_type in types.items():
-    print("\t\t<tu tuid=\"" + str(i+1) + "\">",
-          "\t\t\t<prop type=\"word_type\">" + word_type[0] +
-          "</prop>", sep="\n")
+    f = open('english_' + userWord + '2all.tmx', 'w')
+    sys.stdout = f
 
-    getMeaning("cold", word_type[0])
-
-    print("\t\t\t<tuv xml:lang=\"en\">",
-          "\t\t\t\t<seg>cold</seg>",
-          "\t\t\t</tuv>",
+    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+          "<tmx version=\"1.4\">",
+          "\t<header adminlang=\"en\"",
+          "\t\tdatatype=\"tbx\"",
+          "\t\to-tmf=\"unknown\"",
+          "\t\tsegtype=\"block\"",
+          "\t\tsrclang=\"en\"/>",
+          "\t<body>",
           sep="\n")
 
-    for translation in word_type[1]:
-        print("\t\t\t<tuv xml:lang=\"" + translation[0] + "\">",
-              "\t\t\t\t<seg>" + translation[1] + "</seg>",
+    i = 0
+
+    for word_type in types.items():
+        print("\t\t<tu tuid=\"" + str(i+1) + "\">",
+              "\t\t\t<prop type=\"word_type\">" + word_type[0] +
+              "</prop>", sep="\n")
+
+        getMeaning(userWord, word_type[0])
+
+        print("\t\t\t<tuv xml:lang=\"en\">",
+              "\t\t\t\t<seg>" + userWord + "</seg>",
               "\t\t\t</tuv>",
               sep="\n")
-    i = i + 1
-    print("\t\t</tu>")
 
-print("\t</body>",
-      "</tmx>",
-      sep="\n")
+        for translation in word_type[1]:
+            print("\t\t\t<tuv xml:lang=\"" + translation[0] + "\">",
+                  "\t\t\t\t<seg>" + translation[1] + "</seg>",
+                  "\t\t\t</tuv>",
+                  sep="\n")
+        i = i + 1
+        print("\t\t</tu>")
 
-# for language in languages:
-
-#     urlBase = "https://www.linguee.com/english-" + language + "/search?query=cold"
-
-#     response = requests.get(urlBase).content
-
-#     soup = BS(response, 'html.parser')
-
-#     dictionary = soup.find('div', id="dictionary")
-#     exact = dictionary.find('div', 'exact')
-#     lemma = exact.findAll('div', 'lemma')
-
-#     for lem in lemma:
-#         words = lem.findAll('span', 'tag_lemma')
-#         translations = lem.findAll('span', 'tag_trans')
-
-#         for word in words:
-
-#             if("cold" == word.a.text):
-
-#                 audio = word.find('a', 'audio')
-#                 word_type = word.find('span', 'tag_wordtype')
-
-#                 audio = re.search(r"\"PT_PT(\w|\d|\/|\-)+\"", audio['onclick'])
-#                 # print(audio.group())
-# print("\t\t<tu tuid=\"" + str(i+1) + "\">",
-#       "\t\t\t<prop type=\"word_type\"> " + word_type.text +
-#       " </prop>", "\t\t\t<tuv xml:lang=\"en\">",
-#       "\t\t\t\t<seg> " + word.a.text + " </seg>",
-#       "\t\t\t</tuv>",
-#       sep="\n")
-# i = i + 1
-#                 for translation in translations:
-#                     print("\t\t\t<tuv xml:lang=\"" + language+"\">",
-#                           "\t\t\t\t<seg> " + translation.a.text + " </seg>",
-#                           "\t\t\t</tuv>",
-#                           sep="\n")
-#                     break
-
-#         print("\t\t</tu>")
-
-# print("\t</body>",
-#       "</tmx>",
-#       sep="\n")
+    print("\t</body>",
+          "</tmx>",
+          sep="\n")
