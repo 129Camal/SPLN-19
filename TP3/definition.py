@@ -3,31 +3,54 @@ import requests
 import sys
 
 
-urlBase = "https://www.lexico.com/en/definition/"
+def getMeaning(word, semantic_meaning):
 
-response = requests.get(urlBase).content
+    urlBase = "https://www.lexico.com/en/definition/" + word
 
-soup = BS(response, 'html.parser')
+    response = requests.get(urlBase).content
 
-word_types = soup.findAll('section', 'gramb')
+    soup = BS(response, 'html.parser')
 
-for word_type in word_types:
-    instance = word_type.find('h3', 'ps pos')
-    print(instance.span.text)
+    word_types = soup.findAll('section', 'gramb')
 
-    ul = word_type.find('ul', 'semb')
-    lis = ul.findAll('li')
-    
-    allmeaning = []
-    for li in lis:
-        div = li.find('div', 'trg')
+    for word_type in word_types:
+        instance = word_type.find('h3', 'ps pos')
+
+        if(semantic_meaning != instance.span.text):
+            continue
+
+        ul = word_type.find('ul', 'semb')
+        lis = ul.findAll('li')
+
+        allmeaning = []
+        allsyn = []
+        for li in lis:
+            div = li.find('div', 'trg')
+            
+            if(div):
+                # Get Meaning
+                p = div.find('p')
+                if(p):
+                    span = p.find('span', 'ind')
+                    allmeaning.append(span.text)
+
+                    # Get Synonyms
+                    sysn = div.find('div', 'synonyms')
+                    if(sysn):
+                        strong = sysn.find('strong', 'syn')
+                        exg = sysn.find('span', 'syn')
+                        allsyn.append(strong.text + exg.text)
+                    else:
+                        allsyn.append("Doesn`t have synonyms")
+
+
+        if(len(allmeaning) > 0):
+            x = " || ".join(allmeaning)
+            print("Meaning -> " + x)
         
-        if(div):
-            p = div.find('p')
-            if(p):
-                span = p.find('span', 'ind')
-                print("-> " + span.text)
-                allmeaning.append(span.text)
+        if(len(allsyn) > 0):
+            x = " || ".join(allsyn)
+            print("Sys -> " + x)
 
-    print(" ;".join(allmeaning))
+getMeaning('cold', 'noun')
         

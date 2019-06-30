@@ -3,12 +3,11 @@ import requests
 import sys
 import re
 import getopt
+import os
 
 #
 # Funtion to get the meaning of the word with certain semantic meaning
 #
-
-
 def getMeaning(word, semantic_meaning):
 
     urlBase = "https://www.lexico.com/en/definition/" + word
@@ -29,18 +28,39 @@ def getMeaning(word, semantic_meaning):
         lis = ul.findAll('li')
 
         allmeaning = []
+        allsyn = []
         for li in lis:
             div = li.find('div', 'trg')
 
             if(div):
                 p = div.find('p')
+
                 if(p):
                     span = p.find('span', 'ind')
-                    allmeaning.append(span.text)
+                    if(span):
+                        allmeaning.append(span.text)
+
+                    # Get Synonyms
+                    sysn = div.find('div', 'synonyms')
+                    if(sysn):
+                        strong = sysn.find('strong', 'syn')
+                        exg = sysn.find('span', 'syn')
+
+                        if(not exg):
+                            allsyn.append(strong.text)
+                        else:
+                            allsyn.append(strong.text + exg.text)
+                    else:
+                        allsyn.append("Doesn`t have synonyms")
 
         if(len(allmeaning) > 0):
-            x = ";".join(allmeaning)
+            x = " || ".join(allmeaning)
             print("\t\t\t<prop type=\"meaning\">" +
+                  x + "</prop>")
+        
+        if(len(allsyn) > 0):
+            x = " || ".join(allsyn)
+            print("\t\t\t<prop type=\"synonyms\">" +
                   x + "</prop>")
 
 
@@ -61,6 +81,7 @@ if(len(languages) <= 0 or len(args) <= 0):
     print("Please enter the corret inputs!")
     sys.exit()
 
+notFound = 0
 for userWord in args:
     types = {}
 
@@ -73,6 +94,12 @@ for userWord in args:
         soup = BS(response, 'html.parser')
 
         dictionary = soup.find('div', id="dictionary")
+        
+        if(not dictionary):
+            notFound = 1
+            print(userWord + ": we don't find any translation for that!")
+            break
+        
         exact = dictionary.find('div', 'exact')
         lemma = exact.findAll('div', 'lemma')
 
@@ -125,3 +152,7 @@ for userWord in args:
     print("\t</body>",
           "</tmx>",
           sep="\n")
+
+    if(notFound == 1):
+        os.remove('english_' + userWord + '2all.tmx')
+        notFound = 0
