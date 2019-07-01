@@ -118,7 +118,7 @@ for userWord in args:
     sys.stdout = f
 
     print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-          "<tmx version=\"1.4\">",
+          "<tmx version=\"1.4\">", 
           "\t<header adminlang=\"en\"",
           "\t\tdatatype=\"tbx\"",
           "\t\to-tmf=\"unknown\"",
